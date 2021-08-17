@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 from scipy import signal
 from scipy.interpolate import griddata
 from sklearn.preprocessing import minmax_scale
-
 import pywt
 
 raw_data = pd.read_csv('sliced_FS2e1.csv', sep=',', header=None)
@@ -17,7 +16,7 @@ coeffs_six =pywt.wavedec(raw_data.iloc[:,4], mother_wavelet, level=6)
 
 print('size of A10 coeff:::', coeffs_ten[0].size,'size of raw coeff:::', raw_data.iloc[:,4].size)
 
-#upsample coeffs_ten to have 1000 data points
+# upsample coeffs_ten to have 1000 data points
 raw_data = np.array(raw_data.iloc[:,4])
 coeffs_ten = np.array(coeffs_ten[0])
 coeffs_eight = np.array(coeffs_eight[0])
@@ -56,7 +55,7 @@ for i in range(0, 900):
     scsr.append(updataA6[i] - updataA10[i])
 
 norm_phasic = minmax_scale(phasic)
-norm_scvsr =  minmax_scale(scvsr)
+norm_scvsr = minmax_scale(scvsr)
 norm_scsr = minmax_scale(scsr)
 
 for i in range(0, len(norm_scvsr)):
@@ -64,24 +63,36 @@ for i in range(0, len(norm_scvsr)):
     norm_scvsr[i] = norm_scvsr[i] - 0.5
     norm_scsr[i] = norm_scsr[i] - 0.5
 
+
 plt.plot(norm_phasic)
 plt.plot(norm_scvsr)
 plt.plot(norm_scsr)
 plt.show()
 
 # number of zero crossings counted for each coefficient
-zero_cross_phasic = np.nonzero(np.diff(norm_phasic > 0))[0]
 zero_cross_scvsr = np.nonzero(np.diff(norm_scvsr > 0))[0]
 zero_cross_scsr = np.nonzero(np.diff(norm_scsr > 0))[0]
 
-rate_zero_cross_phaic = zero_cross_phasic.size
 rate_zero_cross_scvsr = zero_cross_scvsr.size
 rate_zero_cross_scsr = zero_cross_scsr.size
 
 
+## Using Sliding Window to extract the max amplitude and max value of phasic
+# Window length = 100 bins
+# Stride = 50 bins
 
+# n = number of
+def slide_window(n, win_len, step, arr):
+    maximum_value = []
+    maximum_amplitude = []
+    for i in range(0, n - win_len + 1, 50):
+        maximum_value.append(max(arr[i:i+win_len]))
+        maximum_amplitude.append(max(arr[i:i+win_len]) - min(arr[i:i+win_len]))
+    return maximum_value, maximum_amplitude
 
-
+maximum_value, maximum_amplitude = slide_window(n=900, win_len=100, step=50, arr=phasic)
+print(len(maximum_value))
+print(len(maximum_amplitude))
 
 
 
