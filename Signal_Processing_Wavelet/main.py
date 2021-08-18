@@ -6,8 +6,25 @@ from scipy.interpolate import griddata
 from sklearn.preprocessing import minmax_scale
 import pywt
 
-raw_data = pd.read_csv('sliced_FS2e1.csv', sep=',', header=None)
+read_path = '../Sensor_Data/GSR_30s_Sliced_Sub2/sliced_FS'
+file_number = '2e1'
+csv_file_extension = '.csv'
+png_file_extension = '.png'
+save_path = '/Signal_Processing_Results/'
+plot_schedule_flag = False
+plot_show_flag = False
+export_data_flag = False
+
+raw_data = pd.read_csv(read_path + file_number + csv_file_extension, sep=',', header=None)
 mother_wavelet = pywt.Wavelet('db3')
+
+if plot_schedule_flag:
+    plt.plot(raw_data.iloc[:,4])
+    plt.title('Raw Data')
+if plot_show_flag:
+    plt.show()
+if export_data_flag:
+    plt.savefig(save_path+'Raw'+png_file_extension)
 
 # A10 Coefficient
 coeffs_ten = pywt.wavedec(raw_data.iloc[:,4], mother_wavelet, level=10)
@@ -54,6 +71,13 @@ for i in range(0, 900):
     scvsr.append(updataA8[i] - updataA10[i])
     scsr.append(updataA6[i] - updataA10[i])
 
+## TODO:transform data back to time domain
+
+
+
+
+
+## normalize extract parameters
 norm_phasic = minmax_scale(phasic)
 norm_scvsr = minmax_scale(scvsr)
 norm_scsr = minmax_scale(scsr)
@@ -63,11 +87,17 @@ for i in range(0, len(norm_scvsr)):
     norm_scvsr[i] = norm_scvsr[i] - 0.5
     norm_scsr[i] = norm_scsr[i] - 0.5
 
+if plot_schedule_flag:
+    plt.plot(norm_phasic)
+    plt.plot(norm_scvsr)
+    plt.plot(norm_scsr)
+    labels = {'phasic', 'scvsr', 'scsr'}
+    plt.title('GSR Different Frequency Bandwidth Normalized')
+    plt.legend(labels)
+    plt.show()
 
-plt.plot(norm_phasic)
-plt.plot(norm_scvsr)
-plt.plot(norm_scsr)
-plt.show()
+if export_data_flag:
+    plt.savefig(save_path + 'frequency_analysis' + file_number + png_file_extension)
 
 # number of zero crossings counted for each coefficient
 zero_cross_scvsr = np.nonzero(np.diff(norm_scvsr > 0))[0]
@@ -81,25 +111,42 @@ rate_zero_cross_scsr = zero_cross_scsr.size
 # Window length = 100 bins
 # Stride = 50 bins
 
-# n = number of
+""" @param 
+n = length of total data
+win_len = window length 
+step = stride width  
+"""
 def slide_window(n, win_len, step, arr):
     maximum_value = []
     maximum_amplitude = []
-    for i in range(0, n - win_len + 1, 50):
+    for i in range(0, n - win_len + 1, step):
         maximum_value.append(max(arr[i:i+win_len]))
         maximum_amplitude.append(max(arr[i:i+win_len]) - min(arr[i:i+win_len]))
     return maximum_value, maximum_amplitude
-
 maximum_value, maximum_amplitude = slide_window(n=900, win_len=100, step=50, arr=phasic)
-print(len(maximum_value))
-print(len(maximum_amplitude))
 
+if plot_schedule_flag:
+    plt.plot(maximum_amplitude)
+    plt.plot(maximum_value)
+    labels = {'maximum amplitude', 'maximum value'}
+    plt.title('GSR Maximum Amplitude and Value')
+    plt.legend(labels)
 
+if plot_show_flag:
+    plt.show()
 
-
-
-
-
-
+if export_data_flag:
+    plt.savefig(save_path + 'amplitude_value_' + file_number + png_file_extension)
+    finalData = {
+                    'Norm-phasic': norm_phasic,
+                    'Norm-scvsr': norm_scvsr,
+                    'Norm-scsr': norm_scsr,
+                    'Zero-cross scvsr': zero_cross_scvsr.size,
+                    'Zero-cross scsr': zero_cross_scsr.size,
+                    'max amplitude': maximum_amplitude,
+                    'max value': maximum_value
+                }
+    df = pd.DataFrame(finalData)
+    df.to_csv(save_path + 'Extrac_ParamFS' + file_number + csv_file_extension)
 
 

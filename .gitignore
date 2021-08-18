@@ -1,3 +1,4 @@
-/.ipynb_checkpoints
-/Sensor_Data
-/.idea
+.ipynb_checkpoints/
+Sensor_Data/
+.idea/
+Signal_Processing_Results/
