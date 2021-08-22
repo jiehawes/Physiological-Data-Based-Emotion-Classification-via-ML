@@ -2,3 +2,4 @@
 Sensor_Data/
 .idea/
 Signal_Processing_Results/
+__pycache__/
