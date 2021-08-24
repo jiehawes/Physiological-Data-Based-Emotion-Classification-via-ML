@@ -104,7 +104,7 @@ for num in range(1, 16):
     rate_zero_cross_scvsr = zero_cross_scvsr.size
     rate_zero_cross_scsr = zero_cross_scsr.size
 
-    maximum_value, maximum_amplitude = slide_window(n=norm_phasic.size, win_len=100, step=50, arr=phasic)
+    maximum_value, maximum_amplitude = slide_window(n=norm_phasic.size, win_len=2000, step=500, arr=phasic)
     if plot_schedule_flag:
         plt.plot(maximum_amplitude)
         plt.plot(maximum_value)
