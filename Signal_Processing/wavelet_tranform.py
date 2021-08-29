@@ -69,7 +69,7 @@ for num in range(1, 16):
     phasic = []
     scvsr = []
     scsr = []
-
+ 
     for i in range(0, time_domain_size):
         phasic.append(gsr_raw[i] - recon_ten[i])
         scvsr.append(recon_eight[i] - recon_ten[i])
