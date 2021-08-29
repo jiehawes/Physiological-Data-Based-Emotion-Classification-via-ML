@@ -24,7 +24,7 @@ def plot_many(coeffs):
 
     ax1 = plt.subplot(241)
     plt.title('A' + 10-num)
-    graph1 = plt.plot(coeffs[i])
+    graph1 = plt.plot(coeffs[0])
 
     ax2 = plt.subplot(242)
     plt.title('D10')
