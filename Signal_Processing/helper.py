@@ -2,10 +2,6 @@
 import matplotlib.pyplot as plt
 
 
-def zero_out_detailed(coeff, level):
-    for i in range(1,level+1):
-        for j in range(0, len(coeff[i])):
-            coeff[i][j] = 0
 
 
 def plot_two(data1, data2):

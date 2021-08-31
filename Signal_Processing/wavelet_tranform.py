@@ -22,6 +22,13 @@ def slide_window(n, win_len, step, arr):
         maximum_amplitude.append(max(arr[i:i+win_len]) - min(arr[i:i+win_len]))
     return maximum_value, maximum_amplitude
 
+
+def zero_out_detailed(coeff, level):
+    for i in range(1,level+1):
+        for j in range(0, len(coeff[i])):
+            coeff[i][j] = 0
+
+
 plot_schedule_flag = True
 plot_show_flag = True
 export_data_flag = True
@@ -49,17 +56,17 @@ for num in range(1, 16):
 
     # A10 Coefficient
     coeffs_ten = pywt.wavedec(raw_data.iloc[:,4], mother_wavelet, level=10)
-    helper.zero_out_detailed(coeffs_ten, 10)
+    zero_out_detailed(coeffs_ten, 10)
     recon_ten = pywt.waverec(coeffs_ten, 'db3')
 
     # A8 Coefficient
     coeffs_eight = pywt.wavedec(raw_data.iloc[:, 4], mother_wavelet, level=8)
-    helper.zero_out_detailed(coeffs_eight, 8)
+    zero_out_detailed(coeffs_eight, 8)
     recon_eight = pywt.waverec(coeffs_eight, 'db3')
 
     # A6 Coefficient
     coeffs_six = pywt.wavedec(raw_data.iloc[:, 4], mother_wavelet, level=6)
-    helper.zero_out_detailed(coeffs_six, 6)
+    zero_out_detailed(coeffs_six, 6)
     recon_six = pywt.waverec(coeffs_six, 'db3')
 
     # Phasic = GSR - A10
